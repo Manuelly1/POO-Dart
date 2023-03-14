@@ -7,9 +7,9 @@ void main() {
   Produto produto2 = Produto(preco: 22.0, descricao: "Leite de soja", dataValidade: "23/03/2023");
   Produto produto3 = Produto(preco: 26.0, descricao: "Body Splash Giovanna Baby", dataValidade: "20/02/2024");
 
-  Item item1 = Item(6, produto1);
-  Item item2 = Item(3, produto2);
-  Item item3 = Item(2, produto3);
+  Item item1 = Item(quantidade: 6, produto: produto1);
+  Item item2 = Item(quantidade: 3, produto: produto2);
+  Item item3 = Item(quantidade: 2, produto: produto3);
 
   Venda venda = Venda(dataVenda: "13/03/2023", itens: [item1, item2, item3]);
 
