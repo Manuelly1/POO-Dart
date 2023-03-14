@@ -3,9 +3,9 @@
 
 void main() {
 
-  Produto massa = Produto(preco: 4.5, descricao: "Macarrão", dataValidade: "20/06/2023");
-  Produto leite = Produto(preco: 16.0, descricao: "Leite de soja", dataValidade: "23/03/2023");
-  Produto perfume = Produto(preco: 26.0, descricao: "Body Splash Giovanna Baby", dataValidade: "20/02/2024");
+  Produto massa = Produto(descricao: "Macarrão", preco: 4.5, dataValidade: "20/06/2023");
+  Produto leite = Produto(descricao: "Leite de soja", preco: 16.0, dataValidade: "23/03/2023");
+  Produto perfume = Produto(descricao: "Body Splash Giovanna Baby", preco: 26.0, dataValidade: "20/02/2024");
 
   Item pacotes = Item(quantidade: 6, produto: massa);
   Item caixas = Item(quantidade: 3, produto: leite);
