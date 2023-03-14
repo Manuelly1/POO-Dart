@@ -8,7 +8,7 @@ void main() {
   Produto produto3 = Produto(preco: 26.0, descricao: "Body Splash Giovanna Baby", dataValidade: "20/02/2024");
 
   Item item1 = Item(6, produto1);
-  Item iitem2 = Item(3, produto2);
+  Item item2 = Item(3, produto2);
   Item item3 = Item(2, produto3);
 
   Venda venda = Venda(dataVenda: "13/03/2023", itens: [item1, item2, item3]);
@@ -42,6 +42,6 @@ class Venda {
   
   double total() => itens.fold(0,(sum,element) => sum + element.total1());
   
-  Venda({required this.data, required this.itens});
+  Venda({required this.dataVenda, required this.itens});
     
 }
