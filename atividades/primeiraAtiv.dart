@@ -3,15 +3,15 @@
 
 void main() {
 
-  Produto produto1 = Produto(preco: 4.5, descricao: "Macarrão", data: "20/06/2023");
-  Produto produto2 = Produto(preco: 22.0, descricao: "Leite de soja", data: "23/03/2023");
-  Produto produto3 = Produto(preco: 26.0, descricao: "Body Splash Giovanna Baby", data: "20/02/2024");
+  Produto produto1 = Produto(preco: 4.5, descricao: "Macarrão", dataValidade: "20/06/2023");
+  Produto produto2 = Produto(preco: 22.0, descricao: "Leite de soja", dataValidade: "23/03/2023");
+  Produto produto3 = Produto(preco: 26.0, descricao: "Body Splash Giovanna Baby", dataValidade: "20/02/2024");
 
-  Item item1 = Item(6, p1);
-  Item iitem2 = Item(3, p2);
-  Item item3 = Item(2, p3);
+  Item item1 = Item(6, produto1);
+  Item iitem2 = Item(3, produto2);
+  Item item3 = Item(2, produto3);
 
-  Venda venda = Venda(data: "13/03/2023", itens: [item1, item2, item3]);
+  Venda venda = Venda(dataVenda: "13/03/2023", itens: [item1, item2, item3]);
 
   print("O total da venda é: R\$${venda.total()}");
 
@@ -30,14 +30,14 @@ class Item {
 class Produto {
   double preco;
   String descricao;
-  String data;
+  String dataValidade;
   
-  Produto({required this.preco, required this.descricao, required this.data});
+  Produto({required this.preco, required this.descricao, required this.dataValidade});
 
 }
 
 class Venda {
-  double data;
+  String dataVenda;
   List<Item> itens;
   
   double total() => itens.fold(0,(sum,element) => sum + element.total1());
