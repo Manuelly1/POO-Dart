@@ -10,6 +10,7 @@ TextStyle _boldTextStyle = TextStyle(
 
 void projeto1() {
   MaterialApp app = MaterialApp(
+    debugShowCheckedModeBanner: false,
     theme: ThemeData(primarySwatch: Colors.pink),
     home: Scaffold(
       appBar: AppBar(title: Text("Artistas que valem à pena você conhecer")),
@@ -45,10 +46,9 @@ void projeto1() {
               SizedBox(width: 16),
               Expanded(
                   child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSid_EwuhEaCucwdBrqILmUD94qUZvG9F5RbOip4xT8u_dfnBBzBJzn5dZDDpk2VN9AcQk&usqp=CAU'
-                  )
-              ),
+                      placeholder: kTransparentImage,
+                      image:
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSid_EwuhEaCucwdBrqILmUD94qUZvG9F5RbOip4xT8u_dfnBBzBJzn5dZDDpk2VN9AcQk&usqp=CAU')),
             ],
           ),
         ),
