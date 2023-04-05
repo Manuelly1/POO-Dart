@@ -24,7 +24,7 @@ void projeto1() {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("- Artcis Monkeys", style: _boldTextStyle),
+                    Text("- Arctic Monkeys", style: _boldTextStyle),
                     Text("- Coldplay", style: _boldTextStyle),
                     Text("- Ed Sheeran", style: _boldTextStyle),
                     Text("- Cigarettes After Sex", style: _boldTextStyle),
