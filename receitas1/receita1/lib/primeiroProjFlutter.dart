@@ -47,8 +47,7 @@ void projeto1() {
                   child: FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
                     image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSid_EwuhEaCucwdBrqILmUD94qUZvG9F5RbOip4xT8u_dfnBBzBJzn5dZDDpk2VN9AcQk&usqp=CAU'
-                  ),
-                ),
+                  )
               ),
             ],
           ),
@@ -82,7 +81,7 @@ void projeto1() {
               ],
             ),
             onPressed: () {},
-          ),
+          )
         ],
       ),
     ),

@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
           title: Text('Cervejas', style: TextStyle(color: Colors.black38)),
         ),
         body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+          scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const <DataColumn> [
               DataColumn(
