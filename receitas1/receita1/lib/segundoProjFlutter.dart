@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
           title: Text('Cervejas', style: TextStyle(color: Colors.black38)),
         ),
         body: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
+          scrollDirection: Axis.vertical,
           child: DataTable(
             columns: const <DataColumn>[
               DataColumn(
@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
               DataColumn(
                 label: Text('Local de fabricação'),
               ),
-              DataColumn(
-                label: Text('Teor alcoólico'))
+              DataColumn(label: Text('Teor alcoólico')),
             ],
             rows: [
               DataRow(cells: [
