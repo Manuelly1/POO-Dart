@@ -34,7 +34,9 @@ class MyApp extends StatelessWidget {
               DataColumn(
                 label: Text('Local de fabricação'),
               ),
-              DataColumn(label: Text('Teor alcoólico')),
+              DataColumn(
+                label: Text('Teor alcoólico')
+              ),
             ],
             rows: [
               DataRow(cells: [
@@ -50,6 +52,9 @@ class MyApp extends StatelessWidget {
                 DataCell(Text('54')),
                 DataCell(Text('Estados Unidos')),
                 DataCell(Text('4,9% de álcool')),
+                DataCell(Text('Saccharomyces pastorianus')),
+                DataCell(Text('Aroma suave e refrescante')),
+                DataCell(Text('140/150 calorias por garrafa de 355ml')),
               ]),
               DataRow(cells: [
                 DataCell(Text('Duvel')),
