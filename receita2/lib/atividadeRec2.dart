@@ -2,23 +2,19 @@
 import 'package:flutter/material.dart';
 
 class NewNavBar extends StatelessWidget {
-  NewNavBar();
-
+  List<Icon> icons;
+  NewNavBar({this.icons = const []});
+  
   void botaoFoiTocado(int index) {
     print("Tocaram no botão $index");
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
-      BottomNavigationBarItem(
-        label: "Cafés",
-        icon: Icon(Icons.coffee_outlined),
-      ),
-      BottomNavigationBarItem(
-          label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-      BottomNavigationBarItem(label: "Nações", icon: Icon(Icons.flag_outlined))
-    ]);
+    return BottomNavigationBar (
+      onTap: botaoFoiTocado,
+      items: icons.map((obj) => BottomNavigationBarItem(icon: obj, label: "Label")
+      ).toList());   
   }
 }
 
@@ -26,18 +22,23 @@ class NewScaffold extends StatelessWidget {
   NewScaffold();
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Text("La Fin Du Monde - Bock - 65 ibu"),
-        ),
-        Expanded(
-          child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
-        ),
-        Expanded(
-          child: Text("Duvel - Pilsner - 82 ibu"),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 16),
+          Expanded(
+            child: Text("La Fin Du Monde - Bock - 65 ibu"),
+          ),
+          Expanded(
+            child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
+          ),
+          Expanded(
+            child: Text("Duvel - Pilsner - 82 ibu"),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -54,7 +55,12 @@ class NewAppBar extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp();
+  final List<Icon> icons = [
+    Icon(Icons.home),
+    Icon(Icons.search),
+    Icon(Icons.person),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,7 +70,7 @@ class MyApp extends StatelessWidget {
           title: Text('Dicas'),
         ),
         body: NewScaffold(),
-        bottomNavigationBar: NewNavBar(),
+        bottomNavigationBar: NewNavBar(icons: icons),
       ),
     );
   }
