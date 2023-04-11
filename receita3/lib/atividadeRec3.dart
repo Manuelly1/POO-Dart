@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-
-
 void main() {
 
   MyApp app = MyApp();
@@ -10,52 +7,55 @@ void main() {
 
 }
 
-
 class MyApp extends StatelessWidget {
 
   @override
 
   Widget build(BuildContext context) {
 
+    
+
     return MaterialApp(
 
-        theme: ThemeData(primarySwatch: Colors.deepPurple),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
 
-        debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner:false,
 
-        home: Scaffold(
+      home: Scaffold(
 
-          appBar: AppBar(
+        appBar: AppBar( 
 
-            title: const Text("Dicas"),
+          title: const Text("Dicas"),
 
           ),
 
-          body: DataBodyWidget(),
+        body: DataBodyWidget(objects:[
 
-          bottomNavigationBar: NewNavBar(),
+          "La Fin Du Monde - Bock - 65 ibu",
 
-        ));
+          "Sapporo Premiume - Sour Ale - 54 ibu",
+
+          "Duvel - Pilsner - 82 ibu"
+
+        ]),
+
+        bottomNavigationBar: NewNavBar(),
+
+      ));
 
   }
 
 }
 
-
-
 class NewNavBar extends StatelessWidget {
 
   NewNavBar();
-
-
 
   void botaoFoiTocado(int index) {
 
     print("Tocaram no botão $index");
 
   }
-
-
 
   @override
 
@@ -83,37 +83,41 @@ class NewNavBar extends StatelessWidget {
 
 }
 
-
-
 class DataBodyWidget extends StatelessWidget {
 
-  DataBodyWidget();
+  List<String> objects;
+
+  DataBodyWidget( {this.objects = const [] });
+
+
+
+  Expanded processarUmElemento(String obj){
+
+    return Expanded(                
+
+          child: Center(child: Text(obj)),
+
+        );
+
+  }
+
+
 
   @override
 
   Widget build(BuildContext context) {
 
-    return Column(children: [
+    List<Expanded> allTheLines = objects.map( 
 
-      Expanded(
+      (obj) => Expanded(
 
-        child: Text("La Fin Du Monde - Bock - 65 ibu"),
+        child: Center(child: Text(obj)),
 
-      ),
+        )
 
-      Expanded(
+      ).toList();
 
-        child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
-
-      ),
-
-      Expanded(
-
-        child: Text("Duvel - Pilsner - 82 ibu"),
-
-      )
-
-    ]);
+    return Column(children: allTheLines);
 
   }
 
