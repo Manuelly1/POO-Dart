@@ -159,14 +159,18 @@ class MyApp extends StatelessWidget {
           title: const Text("Dicas"),
           ),
 
-        body: DataBodyWidget(objects:dataObjects),
+        body: Center(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: DataBodyWidget(objects: dataObjects)
+          )
+      ),
 
         bottomNavigationBar: NewNavBar(),
 
-      ));
-
+      )
+    );
   }
-
 }
 
 
