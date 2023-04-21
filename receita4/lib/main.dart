@@ -130,6 +130,7 @@ class newMyApp extends StatelessWidget { //para a class MytileWidget
     );
   }
 }
+
 class NewNavBar extends StatelessWidget {
   NewNavBar();
 
