@@ -5,17 +5,21 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  
   @override
+  
   State<StatefulWidget> createState() => _MyAppState();
+
 }
 
 class _MyAppState extends State<MyApp> {
   final _nomeController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
-  int? _selectedValue = 0; // aqui está a atualização da variável _selectedValue
+  int? _selectedValue = 0; 
 
   @override
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -48,7 +52,7 @@ class _MyAppState extends State<MyApp> {
                     _selectedValue = value;
                   });
                 },
-                title: 'Organizar dias da semana',
+                title: "Organizar dias úteis da semana",
               ),
               CustomRadioButtons(
                 value: 2,
@@ -58,7 +62,7 @@ class _MyAppState extends State<MyApp> {
                     _selectedValue = value;
                   });
                 },
-                title: 'Organizar o fim de semana',
+                title: "Organizar o fim de semana",
               ),
               CustomElevatedButton(
                 onPressed: () {
@@ -72,11 +76,9 @@ class _MyAppState extends State<MyApp> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Rotina(
-                        _nomeController.text,
-                        _emailController.text,
-                        _senhaController.text,
-                        _selectedValue!,
+                      builder: (context) => 
+                        Rotina(_nomeController.text, _emailController.text, _senhaController.text, _selectedValue!,
+
                       ),
                     ),
                   );
@@ -103,6 +105,7 @@ class CustomTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       decoration: InputDecoration(hintText: hintText),
+
     );
   }
 }
@@ -122,6 +125,7 @@ class CustomRadioButtons extends StatelessWidget {
   });
 
   @override
+  
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title),
@@ -129,20 +133,24 @@ class CustomRadioButtons extends StatelessWidget {
         value: value,
         groupValue: groupValue,
         onChanged: onChanged,
+  
       ),
     );
   }
 }
+
 class CustomElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   CustomElevatedButton({required this.onPressed});
 
   @override
+  
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      child: Text('Cadastrar'),
+      child: Text("Acessar"),
+  
     );
   }
 }
@@ -156,6 +164,7 @@ class Rotina extends StatelessWidget {
   Rotina(this.nome, this.email, this.senha, this.selectedValue);
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -166,6 +175,7 @@ class Rotina extends StatelessWidget {
           selectedValue,
           (index) => ListTile(
             title: Text("Atividade ${index + 1}"),
+  
           ),
         ),
       ),
