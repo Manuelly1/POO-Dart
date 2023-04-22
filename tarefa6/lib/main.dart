@@ -4,11 +4,16 @@ void main() {
   runApp(MyApp());
 }
 
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+}
 
-class MyApp extends StatelessWidget {
+class _MyAppState extends State<MyApp> {
   final _nomeController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
+  int? _selectedValue = 0; // aqui está a atualização da variável _selectedValue
 
   @override
   Widget build(BuildContext context) {
@@ -23,28 +28,56 @@ class MyApp extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              TextField(
+              CustomTextField(
                 controller: _nomeController,
-                decoration: InputDecoration(hintText: "Digite seu nome:"),
+                hintText: "Digite seu nome:",
               ),
-              TextField(
+              CustomTextField(
                 controller: _emailController,
-                decoration: InputDecoration(hintText: "Digite seu email:"),
+                hintText: "Digite seu email:",
               ),
-              TextField(
+              CustomTextField(
                 controller: _senhaController,
-                decoration: InputDecoration(hintText: "Digite sua senha:"),
+                hintText: "Digite sua senha:",
               ),
-              // Adicionar aqui os demais componentes do formulário, como radio buttons,
-              // toggle button, slide etc.
-              ElevatedButton(
-                child: Text("Cadastrar"),
+              CustomRadioButtons(
+                value: 1,
+                groupValue: _selectedValue,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedValue = value;
+                  });
+                },
+                title: 'Organizar dias da semana',
+              ),
+              CustomRadioButtons(
+                value: 2,
+                groupValue: _selectedValue,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedValue = value;
+                  });
+                },
+                title: 'Organizar o fim de semana',
+              ),
+              CustomElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar( //dúvida sobre isso
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Processando o cadastro..."),
                       duration: Duration(seconds: 5),
                       backgroundColor: Colors.red,
+                    ),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Rotina(
+                        _nomeController.text,
+                        _emailController.text,
+                        _senhaController.text,
+                        _selectedValue!,
+                      ),
                     ),
                   );
                 },
@@ -58,11 +91,84 @@ class MyApp extends StatelessWidget {
 }
 
 
-class Rotina {
+class CustomTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+
+  CustomTextField({required this.controller, required this.hintText});
+
+  @override
+
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(hintText: hintText),
+    );
+  }
+}
+
+
+class CustomRadioButtons extends StatelessWidget {
+  final int value;
+  final int? groupValue;
+  final Function(int?)? onChanged;
+  final String title;
+
+  CustomRadioButtons({
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      leading: Radio(
+        value: value,
+        groupValue: groupValue,
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+class CustomElevatedButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  CustomElevatedButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text('Cadastrar'),
+    );
+  }
+}
+
+class Rotina extends StatelessWidget {
   final String nome;
   final String email;
   final String senha;
+  final int selectedValue;
 
-  Rotina(this.nome, this.email, this.senha);
+  Rotina(this.nome, this.email, this.senha, this.selectedValue);
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Tentando ter uma rotina de gente grande"),
+      ),
+      body: ListView(
+        children: List.generate(
+          selectedValue,
+          (index) => ListTile(
+            title: Text("Atividade ${index + 1}"),
+          ),
+        ),
+      ),
+    );
+  }
 }
