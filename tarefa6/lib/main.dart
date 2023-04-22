@@ -41,26 +41,22 @@ class MyApp extends StatelessWidget {
                 controller: _senhaController,
                 decoration: InputDecoration(hintText: 'Digite sua senha:'),
               ),
-              // Adicione aqui os demais componentes do formulário, como radio buttons,
+              // Adicionar aqui os demais componentes do formulário, como radio buttons,
               // toggle button, slide etc.
               ElevatedButton(
                 child: Text("Cadastrar"),
                 onPressed: () {
-                  // Exibe o snackbar indicando que o formulário está sendo processado
+                  // Ação que será executada quando o botão for pressionado
+                  // Pode ser uma única linha de código ou um bloco de código maior
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Processando cadastro...'),
                       duration: Duration(seconds: 5),
+                      backgroundColor: Colors.red,
                     ),
                   );
-
-                  // Lógica para lidar com o pressionamento do botão aqui.
-                  String nome = _nomeController.text;
-                  String email = _emailController.text;
-                  String senha = _senhaController.text;
-                  Rotina rotina = Rotina(nome, email, senha);
                 },
-              )
+              ),
             ],
           ),
         ),

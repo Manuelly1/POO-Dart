@@ -123,11 +123,11 @@ class newMyApp extends StatelessWidget { //para a class MytileWidget
             title: const Text("Dicas"),
           ),
           body: Center(
-            child: MyTileWidget(objects: dataObjects)
-          ),   
+              child: MyTileWidget(objects: dataObjects, columnNames: ["Nome", "Estilo", "IBU"], propertyNames: ["name", "style", "ibu"])
+          ),                
           bottomNavigationBar: NewNavBar(),
-       )
-    );
+        )
+      );
   }
 }
 
@@ -182,23 +182,29 @@ class DataBodyWidget extends StatelessWidget {
 
 class MyTileWidget extends StatelessWidget {
   List<Map<String, dynamic>> objects;
+  final List<String> columnNames;
+  final List<String> propertyNames;
 
-  MyTileWidget({this.objects = const []});
+  MyTileWidget({this.objects = const [], this.columnNames = const [], this.propertyNames = const []});
 
   @override
+  
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: objects.length,
       itemBuilder: (context, index) {
         final obj = objects[index];
+
+        final columnTexts = columnNames.map((col) {
+          final prop = propertyNames[columnNames.indexOf(col)];
+          return Text("$col: ${obj[prop]}");
+        }).toList();
+
         return ListTile(
-          title: Text(obj["name"]!),
-          subtitle: Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("${obj["style"]} - IBU: ${obj["ibu"]}"),
-            ],
-          )
+            children: columnTexts,
+          ),
         );
       },
     );
