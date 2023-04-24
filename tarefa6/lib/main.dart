@@ -9,6 +9,7 @@ class MyApp extends StatefulWidget {
   @override
 
   State<StatefulWidget> createState() => _MyAppState();
+
 }
 
 class _MyAppState extends State<MyApp> {
@@ -18,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   bool _toggleValue = false;
 
   @override
-
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -86,23 +87,25 @@ class _MyAppState extends State<MyApp> {
                   falseText: 'A rotina está on',
                 ),
                 SizedBox(height: 16),
-                CustomElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Processando o cadastro..."),
-                        duration: Duration(seconds: 10),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  },
+                Builder(
+                  builder: (context) => CustomElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Processando..."),
+                          duration: Duration(seconds: 10),
+                          backgroundColor: Colors.black,
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: _selectedValue,
                   itemBuilder: (context, index) => ListTile(
-                    title: Text("Atividade ${index + 1}"),
+                    title: SizedBox.shrink(),
                   ),
                 ),
               ],
@@ -127,6 +130,7 @@ class CustomTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(hintText: hintText),
+
       ),
     );
   }
@@ -150,6 +154,7 @@ class CustomRadioButtons extends StatelessWidget {
           value: value,
           groupValue: groupValue,
           onChanged: onChanged,
+
         ),
       ),
     );
@@ -213,11 +218,11 @@ class _CustomToggleButtonState extends State<CustomToggleButton> {
           },
         ),
         Text(widget.trueText),
+
       ],
     );
   }
 }
-
 
 class Rotina extends StatelessWidget {
   final String nome;
@@ -253,6 +258,7 @@ class Rotina extends StatelessWidget {
             ),
             CustomElevatedButton(
               onPressed: () {},
+
             ),
           ],
         ),
