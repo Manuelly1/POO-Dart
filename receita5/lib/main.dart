@@ -1,43 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 var dataObjects = [];
 
 void main() {
 
   MyApp app = MyApp();
-
   runApp(app);
 
 }
 
 
-
 class MyApp extends StatelessWidget {
-
+  
   @override
 
   Widget build(BuildContext context) {
-
-    
+    //print("no build da classe MyApp");
 
     return MaterialApp(
-
       theme: ThemeData(primarySwatch: Colors.deepPurple),
-
       debugShowCheckedModeBanner:false,
-
       home: Scaffold(
-
         appBar: AppBar( 
-
           title: const Text("Dicas"),
-
           ),
-
         body: DataTableWidget(jsonObjects:dataObjects),
-
         bottomNavigationBar: NewNavBar(),
-
       ));
 
   }
@@ -45,48 +34,85 @@ class MyApp extends StatelessWidget {
 }
 
 
-
-class NewNavBar extends StatelessWidget {
+class NewNavBar extends HookWidget {
 
   NewNavBar();
 
-
-
-  void buttonTapped(int index) {
-
-    print("Tocaram no botão $index");
-
-  }
-
-
-
   @override
 
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
+    //print("no build da classe NewNavBar");
 
-    return BottomNavigationBar(onTap: buttonTapped, items: const [
+    var state = useState(1);
 
-      BottomNavigationBarItem(
+    return BottomNavigationBar(
+      onTap: (index){
+        state.value = index;
+      }, 
+      currentIndex: state.value,
 
-        label: "Cafés",
+      items: const [
+        BottomNavigationBarItem(
+            label: "Cafés",
+            icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+            label: "Cervejas", 
+            icon: Icon(Icons.local_drink_outlined)
+        ),
+        BottomNavigationBarItem(
+            label: "Nações", 
+            icon: Icon(Icons.flag_outlined)
+        )
 
-        icon: Icon(Icons.coffee_outlined),
-
-      ),
-
-      BottomNavigationBarItem(
-
-          label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-
-      BottomNavigationBarItem(label: "Nações", icon: Icon(Icons.flag_outlined))
-
-    ]);
+      ]);
 
   }
 
 }
 
+class NewNavBar2 extends StatefulWidget {
+  NewNavBar2();
 
+  @override
+  
+  _NewNavBar2State createState() => _NewNavBar2State();
+}
+
+class _NewNavBar2State extends State<NewNavBar2> {
+  
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  
+  Widget build(BuildContext context) {
+//    print("no build da classe NewNavBar2");
+    return BottomNavigationBar(
+      onTap: _onItemTapped,
+      currentIndex: _selectedIndex,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
+    );
+  }
+}
 
 class DataTableWidget extends StatelessWidget {
 
@@ -94,48 +120,29 @@ class DataTableWidget extends StatelessWidget {
 
   DataTableWidget( {this.jsonObjects = const [] });
 
-
-
   @override
 
   Widget build(BuildContext context) {
-
-    
+    //print("no build da classe DataTableWidget");    
 
     var columnNames = ["Nome","Estilo","IBU"],
-
         propertyNames = ["name", "style", "ibu"];
 
-    
-
     return DataTable(
-
       columns: columnNames.map( 
-
                 (name) => DataColumn(
-
                   label: Expanded(
-
                     child: Text(name, style: TextStyle(fontStyle: FontStyle.italic))
-
                   )
-
                 )
-
               ).toList(),
 
       rows: jsonObjects.map( 
-
         (obj) => DataRow(
-
             cells: propertyNames.map(
-
               (propName) => DataCell(Text(obj[propName]))
-
             ).toList()
-
           )
-
         ).toList());
 
   }
