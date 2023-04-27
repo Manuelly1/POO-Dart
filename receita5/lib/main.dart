@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
 
   Widget build(BuildContext context) {
-    //print("no build da classe MyApp");
+    print("no build da classe MyApp");
 
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -41,7 +41,7 @@ class NewNavBar extends HookWidget {
   @override
 
   Widget build(BuildContext context) {    
-    //print("no build da classe NewNavBar");
+    print("no build da classe NewNavBar");
 
     var state = useState(1);
 
@@ -92,7 +92,8 @@ class _NewNavBar2State extends State<NewNavBar2> {
   @override
   
   Widget build(BuildContext context) {
-//    print("no build da classe NewNavBar2");
+    print("no build da classe NewNavBar2");
+
     return BottomNavigationBar(
       onTap: _onItemTapped,
       currentIndex: _selectedIndex,
@@ -123,7 +124,7 @@ class DataTableWidget extends StatelessWidget {
   @override
 
   Widget build(BuildContext context) {
-    //print("no build da classe DataTableWidget");    
+    print("no build da classe DataTableWidget");    
 
     var columnNames = ["Nome","Estilo","IBU"],
         propertyNames = ["name", "style", "ibu"];
@@ -132,7 +133,8 @@ class DataTableWidget extends StatelessWidget {
       columns: columnNames.map( 
                 (name) => DataColumn(
                   label: Expanded(
-                    child: Text(name, style: TextStyle(fontStyle: FontStyle.italic))
+                    child: 
+                      Text(name, style: TextStyle(fontStyle: FontStyle.italic))
                   )
                 )
               ).toList(),
