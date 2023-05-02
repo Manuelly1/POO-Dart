@@ -10,11 +10,13 @@ class DataService {
       "style": "Bock",
       "ibu": "65"
     },
+    
     {
       "name": "Sapporo Premiume",
       "style": "Sour Ale",
       "ibu": "54"
     },
+    
     {
       "name": "Duvel",
       "style": "Pilsner",
@@ -26,13 +28,15 @@ class DataService {
     {
       "name": "Café brasileiro",
       "type": "Arábica",
-      "strength": "Média"
+      "strength": "Médio"
     },
+    
     {
       "name": "Café colombiano",
       "type": "Arábica",
       "strength": "Forte"
     },
+    
     {
       "name": "Café turco",
       "type": "Robusta",
@@ -46,11 +50,13 @@ class DataService {
       "continent": "América do Sul",
       "population": "213,3 milhões"
     },
+    
     {
       "name": "Japão",
       "continent": "Ásia",
       "population": "126,5 milhões"
     },
+    
     {
       "name": "Itália",
       "continent": "Europa",
@@ -74,17 +80,39 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-
+  
   @override
-
+  
   _MyAppState createState() => _MyAppState();
-
 }
 
 class _MyAppState extends State<MyApp> {
   final DataService dataService = DataService();
 
   int _selectedIndex = 0;
+
+  static const List<Map<String, dynamic>> _navBarItems = [
+    {
+      'label': 'Cafés',
+      'icon': Icon(Icons.coffee_outlined),
+      'columnNames': ['Nome', 'Tipo', 'Intensidade'],
+      'propertyNames': ['name', 'type', 'strength'],
+    },
+    
+    {
+      'label': 'Cervejas',
+      'icon': Icon(Icons.local_drink_outlined),
+      'columnNames': ['Nome', 'Estilo', 'IBU'],
+      'propertyNames': ['name', 'style', 'ibu'],
+    },
+    
+    {
+      'label': 'Nações',
+      'icon': Icon(Icons.flag_outlined),
+      'columnNames': ['Nome', 'Continente', 'População'],
+      'propertyNames': ['name', 'continent', 'population'],
+    },
+  ];
 
   @override
   
@@ -103,6 +131,8 @@ class _MyAppState extends State<MyApp> {
   @override
   
   Widget build(BuildContext context) {
+    final navBarItem = _navBarItems[_selectedIndex];
+
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
@@ -117,25 +147,18 @@ class _MyAppState extends State<MyApp> {
           builder: (context, value, child) {
             return DataTableWidget(
               jsonObjects: value,
-              columnNames: _getColumnNames(),
-              propertyNames: _getPropertyNames(),
+              columnNames: navBarItem['columnNames'],
+              propertyNames: navBarItem['propertyNames'],
             );
           },
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
-              label: 'Cafés',
-              icon: Icon(Icons.coffee_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: 'Cervejas',
-              icon: Icon(Icons.local_drink_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: 'Nações',
-              icon: Icon(Icons.flag_outlined),
-            ),
+          items: [
+            for (var item in _navBarItems)
+              BottomNavigationBarItem(
+                label: item['label'],
+                icon: item['icon'],
+              ),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
@@ -143,27 +166,8 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
-  List<String> _getColumnNames() {
-    if (_selectedIndex == 0) {
-      return ["Nome", "Tipo", "Intensidade"];
-    } else if (_selectedIndex == 1) {
-      return ["Nome", "Estilo", "IBU"];
-    } else {
-      return ["Nome", "Continente", "População"];
-    }
-  }
-
-  List<String> _getPropertyNames() {
-    if (_selectedIndex == 0) {
-      return ["name", "type", "strength"];
-    } else if (_selectedIndex == 1) {
-      return ["name", "style", "ibu"];
-    } else {
-      return ["name", "continent", "population"];
-    }
-  }
 }
+
 
 
 class NewNavBar extends HookWidget {
