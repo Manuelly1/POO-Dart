@@ -4,76 +4,67 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class DataService {
   final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
 
-  final List<Map<String, String>> cervejas = [
-    {
-      "name": "La Fin Du Monde",
-      "style": "Bock",
-      "ibu": "65"
-    },
+  final Map<int, List<Map<String, String>>> _dataMap = {
+    0: [
+      {
+        "name": "Café brasileiro",
+        "type": "Arábica",
+        "strength": "Médio"
+      },
+      {
+        "name": "Café colombiano",
+        "type": "Arábica",
+        "strength": "Forte"
+      },
+      {
+        "name": "Café turco",
+        "type": "Robusta",
+        "strength": "Muito forte"
+      }
+    ],
     
-    {
-      "name": "Sapporo Premiume",
-      "style": "Sour Ale",
-      "ibu": "54"
-    },
-    
-    {
-      "name": "Duvel",
-      "style": "Pilsner",
-      "ibu": "82"
-    }
-  ];
+    1: [
+      {
+        "name": "La Fin Du Monde",
+        "style": "Bock",
+        "ibu": "65"
+      },
+      {
+        "name": "Sapporo Premiume",
+        "style": "Sour Ale",
+        "ibu": "54"
+      },
+      {
+        "name": "Duvel",
+        "style": "Pilsner",
+        "ibu": "82"
+      }
+    ],
 
-  final List<Map<String, String>> cafes = [
-    {
-      "name": "Café brasileiro",
-      "type": "Arábica",
-      "strength": "Médio"
-    },
-    
-    {
-      "name": "Café colombiano",
-      "type": "Arábica",
-      "strength": "Forte"
-    },
-    
-    {
-      "name": "Café turco",
-      "type": "Robusta",
-      "strength": "Muito forte"
-    }
-  ];
-
-  final List<Map<String, String>> nacoes = [
-    {
-      "name": "Brasil",
-      "continent": "América do Sul",
-      "population": "213,3 milhões"
-    },
-    
-    {
-      "name": "Japão",
-      "continent": "Ásia",
-      "population": "126,5 milhões"
-    },
-    
-    {
-      "name": "Itália",
-      "continent": "Europa",
-      "population": "60,4 milhões"
-    }
-  ];
+    2: [
+      {
+        "name": "Brasil",
+        "continent": "América do Sul",
+        "population": "213,3 milhões"
+      },
+      {
+        "name": "Japão",
+        "continent": "Ásia",
+        "population": "126,5 milhões"
+      },
+      {
+        "name": "Itália",
+        "continent": "Europa",
+        "population": "60,4 milhões"
+      }
+    ],
+  };
 
   void carregar(int index) {
-    if (index == 1) {
-      tableStateNotifier.value = cervejas;
-    } else if (index == 0) {
-      tableStateNotifier.value = cafes;
-    } else if (index == 2) {
-      tableStateNotifier.value = nacoes;
-    }
+    tableStateNotifier.value = _dataMap[index] ?? [];
   }
 }
+
 
 void main() {
   runApp(MyApp());
