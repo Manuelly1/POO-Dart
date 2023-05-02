@@ -4,108 +4,164 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class DataService {
   final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
 
+  final List<Map<String, String>> cervejas = [
+    {
+      "name": "La Fin Du Monde",
+      "style": "Bock",
+      "ibu": "65"
+    },
+    {
+      "name": "Sapporo Premiume",
+      "style": "Sour Ale",
+      "ibu": "54"
+    },
+    {
+      "name": "Duvel",
+      "style": "Pilsner",
+      "ibu": "82"
+    }
+  ];
+
+  final List<Map<String, String>> cafes = [
+    {
+      "name": "Café brasileiro",
+      "type": "Arábica",
+      "strength": "Média"
+    },
+    {
+      "name": "Café colombiano",
+      "type": "Arábica",
+      "strength": "Forte"
+    },
+    {
+      "name": "Café turco",
+      "type": "Robusta",
+      "strength": "Muito forte"
+    }
+  ];
+
+  final List<Map<String, String>> nacoes = [
+    {
+      "name": "Brasil",
+      "continent": "América do Sul",
+      "population": "213,3 milhões"
+    },
+    {
+      "name": "Japão",
+      "continent": "Ásia",
+      "population": "126,5 milhões"
+    },
+    {
+      "name": "Itália",
+      "continent": "Europa",
+      "population": "60,4 milhões"
+    }
+  ];
+
   void carregar(int index) {
     if (index == 1) {
-      carregarCervejas();
+      tableStateNotifier.value = cervejas;
     } else if (index == 0) {
-      carregarCafes();
+      tableStateNotifier.value = cafes;
     } else if (index == 2) {
-      carregarNacoes();
+      tableStateNotifier.value = nacoes;
     }
   }
-
-  void carregarCervejas() {
-    tableStateNotifier.value = [
-      {
-        "name": "La Fin Du Monde",
-        "style": "Bock",
-        "ibu": "65"
-      },
-      {
-        "name": "Sapporo Premiume",
-        "style": "Sour Ale",
-        "ibu": "54"
-      },
-      {
-        "name": "Duvel",
-        "style": "Pilsner",
-        "ibu": "82"
-      }
-    ];
-  }
-
-  void carregarCafes() {
-    tableStateNotifier.value = [
-      {
-        "name": "Café brasileiro",
-        "type": "Arábica",
-        "strength": "Médio"
-      },
-      {
-        "name": "Café colombiano",
-        "type": "Arábica",
-        "strength": "Forte"
-      },
-      {
-        "name": "Café turco",
-        "type": "Robusta",
-        "strength": "Muito forte"
-      }
-    ];
-  }
-
-  void carregarNacoes() {
-    tableStateNotifier.value = [
-      {
-        "name": "Brasil",
-        "continent": "América do Sul",
-        "population": "213,3 milhões"
-      },
-      {
-        "name": "Japão",
-        "continent": "Ásia",
-        "population": "126,5 milhões"
-      },
-      {
-        "name": "Itália",
-        "continent": "Europa",
-        "population": "60,4 milhões"
-      }
-    ];
-  }
 }
-
-final dataService = DataService();
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+
+  @override
+
+  _MyAppState createState() => _MyAppState();
+
+}
+
+class _MyAppState extends State<MyApp> {
+  final DataService dataService = DataService();
+
+  int _selectedIndex = 0;
+
+  @override
   
+  void initState() {
+    super.initState();
+    dataService.carregar(_selectedIndex);
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      dataService.carregar(_selectedIndex);
+    });
+  }
+
   @override
   
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Dicas"),
+          title: const Text('Dicas'),
         ),
-        body: ValueListenableBuilder(
+        body: ValueListenableBuilder<List>(
           valueListenable: dataService.tableStateNotifier,
-          builder: (_, value, __) {
+          builder: (context, value, child) {
             return DataTableWidget(
               jsonObjects: value,
-              propertyNames: ["name", "style", "ibu"],
-              columnNames: ["Nome", "Estilo", "IBU"],
+              columnNames: _getColumnNames(),
+              propertyNames: _getPropertyNames(),
             );
           },
         ),
-        bottomNavigationBar: NewNavBar(onItemSelected: dataService.carregar),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              label: 'Cafés',
+              icon: Icon(Icons.coffee_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: 'Cervejas',
+              icon: Icon(Icons.local_drink_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: 'Nações',
+              icon: Icon(Icons.flag_outlined),
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
+  }
+
+  List<String> _getColumnNames() {
+    if (_selectedIndex == 0) {
+      return ["Nome", "Tipo", "Intensidade"];
+    } else if (_selectedIndex == 1) {
+      return ["Nome", "Estilo", "IBU"];
+    } else {
+      return ["Nome", "Continente", "População"];
+    }
+  }
+
+  List<String> _getPropertyNames() {
+    if (_selectedIndex == 0) {
+      return ["name", "type", "strength"];
+    } else if (_selectedIndex == 1) {
+      return ["name", "style", "ibu"];
+    } else {
+      return ["name", "continent", "population"];
+    }
   }
 }
 
