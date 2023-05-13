@@ -26,6 +26,7 @@ class DataService{
       return;
     }
   }
+//ainda não está exibindo a parte de cafés e nações
 
   Future<void> carregarCervejas() async{
 
