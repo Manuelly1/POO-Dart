@@ -77,84 +77,86 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final DataService dataService = DataService();
+    final DataService dataService = DataService();
+    int _selectedIndex = 0;
+    bool _showTable = false;
 
-  int _selectedIndex = 0;
+    static const List<Map<String, dynamic>> _navBarItems = [
+      {
+        'label': 'Cafés',
+        'icon': Icon(Icons.coffee_outlined),
+        'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
+        'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier'],
+      },
+      {
+        'label': 'Cervejas',
+        'icon': Icon(Icons.local_drink_outlined),
+        'columnNames': ['Nome', 'Estilo', 'IBU'],
+        'propertyNames': ['name', 'style', 'ibu'],
+      },
+      {
+        'label': 'Nações',
+        'icon': Icon(Icons.flag_outlined),
+        'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nac'],
+        'propertyNames': ['nationality', 'language', 'capital', 'national_sport'],
+      },
+    ];
 
-  static const List<Map<String, dynamic>> _navBarItems = [
-    {
-      'label': 'Cafés',
-      'icon': Icon(Icons.coffee_outlined),
-      'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
-      'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier'],
-    },
-    {
-      'label': 'Cervejas',
-      'icon': Icon(Icons.local_drink_outlined),
-      'columnNames': ['Nome', 'Estilo', 'IBU'],
-      'propertyNames': ['name', 'style', 'ibu'],
-    },
-    {
-      'label': 'Nações',
-      'icon': Icon(Icons.flag_outlined),
-      'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nac'],
-      'propertyNames': ['nationality', 'language', 'capital', 'national_sport'],
-    },
-  ];
-
-  @override
-  
-  void initState() {
-    super.initState();
-    dataService.carregar(_selectedIndex);
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+    @override
+    void initState() {
+      super.initState();
       dataService.carregar(_selectedIndex);
-    });
-  }
+    }
 
-  @override
-  
-  Widget build(BuildContext context) {
-    final navBarItem = _navBarItems[_selectedIndex];
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Dicas'),
+    void _onItemTapped(int index) {
+      setState(() {
+        _selectedIndex = index;
+        _showTable = true; 
+        dataService.carregar(_selectedIndex);
+      });
+    }
+
+    @override
+    
+    Widget build(BuildContext context) {
+      final navBarItem = _navBarItems[_selectedIndex];
+      return MaterialApp(
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
         ),
-        body: ValueListenableBuilder<List<Map<String, dynamic>>>(
-          valueListenable: dataService.tableStateNotifier,
-          builder: (context, value, child) {
-            return DataTableWidget(
-              jsonObjects: value,
-              columnNames: navBarItem['columnNames'],
-              propertyNames: navBarItem['propertyNames'],
-            );
-          },
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Text('Dicas'),
+          ),
+          body: Visibility(
+            visible: _showTable, 
+            child: ValueListenableBuilder<List<Map<String, dynamic>>>(
+              valueListenable: dataService.tableStateNotifier,
+              builder: (context, value, child) {
+                return DataTableWidget(
+                  jsonObjects: value,
+                  columnNames: navBarItem['columnNames'],
+                  propertyNames: navBarItem['propertyNames'],
+                );
+              },
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: [
+              for (var item in _navBarItems)
+                BottomNavigationBarItem(
+                  label: item['label'],
+                  icon: item['icon'],
+                ),
+            ],
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+          ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            for (var item in _navBarItems)
-              BottomNavigationBarItem(
-                label: item['label'],
-                icon: item['icon'],
-              ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
-      ),
-    );
+      );
   }
 }
-
 
 
 class NewNavBar extends HookWidget {
