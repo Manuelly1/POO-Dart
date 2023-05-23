@@ -15,6 +15,7 @@ class DataService {
 
   void carregar(int index) {
     final funcoes = [carregarCafes, carregarCervejas, carregarNacoes, carregarCartoes];
+    
     tableStateNotifier.value = {
       'status': TableStatus.loading,
       'dataObjects': [],
@@ -34,12 +35,14 @@ class DataService {
 
       var jsonString = await http.read(coffeesUri);
       var coffeesJson = jsonDecode(jsonString);
+      
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': coffeesJson,
         'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
         'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier']
       };
+
     } catch (error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
@@ -59,12 +62,14 @@ class DataService {
 
       var jsonString = await http.read(nationsUri);
       var nationsJson = jsonDecode(jsonString);
+      
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': nationsJson,
-        'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nacional'],
+        'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nac.'],
         'propertyNames': ['nationality', 'language', 'capital', 'national_sport']
       };
+
     } catch (error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
@@ -84,12 +89,14 @@ class DataService {
 
       var jsonString = await http.read(beersUri);
       var beersJson = jsonDecode(jsonString);
+      
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': beersJson,
         'columnNames': ["Nome", "Estilo", "IBU"],
         'propertyNames': ["name", "style", "ibu"],
       };
+
     } catch (error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
@@ -110,12 +117,14 @@ class DataService {
     try {
       var jsonString = await http.read(creditCardsUri);
       var creditCardsJson = jsonDecode(jsonString);
+      
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': creditCardsJson,
         'columnNames': ['Número', 'Nome', 'Bandeira', 'Data de Validade'],
         'propertyNames': ['number', 'name', 'brand', 'expirationDate']
       };
+
     } catch (error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
@@ -133,7 +142,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  
   @override
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
@@ -253,7 +264,7 @@ class DataTableWidget extends StatelessWidget {
     });
 
     @override
-    
+
     Widget build(BuildContext context) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
