@@ -142,7 +142,7 @@ class _MyAppState extends State<MyApp> {
                 items: [
                   DropdownMenuItem<int>(
                     value: 5,
-                    child: Text('5'),
+                    child: Text('5'), 
                   ),
                   DropdownMenuItem<int>(
                     value: 10,
