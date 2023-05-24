@@ -22,31 +22,30 @@ class DataService {
     funcoes[index]();
   }
 
-  void carregarCafes() async {
-    try {
-      var coffeesUri = Uri(
-          scheme: 'https',
-          host: 'random-data-api.com',
-          path: 'api/coffee/random_coffee',
-          queryParameters: {'size': '5'});
+  void carregarCafes() {
+    var coffeesUri = Uri(
+      scheme: 'https',
+      host: 'random-data-api.com',
+      path: 'api/coffee/random_coffee',
+      queryParameters: {'size': '5'},
+    );
 
-      var jsonString = await http.read(coffeesUri);
+    http.read(coffeesUri).then((jsonString) {
       var coffeesJson = jsonDecode(jsonString);
-      
+
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': coffeesJson,
         'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
-        'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier']
+        'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier'],
       };
-
-    } catch (error) {
+    }).catchError((error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
         'dataObjects': [],
         'columnNames': [],
       };
-    }
+    });
   }
 
   void carregarNacoes() async {
@@ -76,31 +75,30 @@ class DataService {
     }
   }
 
-  void carregarCervejas() async {
-    try {
-      var beersUri = Uri(
-          scheme: 'https',
-          host: 'random-data-api.com',
-          path: 'api/beer/random_beer',
-          queryParameters: {'size': '5'});
+  void carregarCervejas() {
+    var beersUri = Uri(
+      scheme: 'https',
+      host: 'random-data-api.com',
+      path: 'api/beer/random_beer',
+      queryParameters: {'size': '5'},
+    );
 
-      var jsonString = await http.read(beersUri);
+    http.read(beersUri).then((jsonString) {
       var beersJson = jsonDecode(jsonString);
-      
+
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': beersJson,
-        'columnNames': ["Nome", "Estilo", "IBU"],
-        'propertyNames': ["name", "style", "ibu"],
+        'columnNames': ['Nome', 'Estilo', 'IBU'],
+        'propertyNames': ['name', 'style', 'ibu'],
       };
-
-    } catch (error) {
+    }).catchError((error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
         'dataObjects': [],
         'columnNames': [],
       };
-    }
+    });
   }
 
   void carregarCartoes() async {
