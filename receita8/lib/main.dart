@@ -5,12 +5,10 @@ import 'dart:convert';
 import 'package:transparent_image/transparent_image.dart';
 
 enum TableStatus { idle, loading, ready, error }
-
 class DataService {
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
     'status': TableStatus.idle,
     'dataObjects': [],
-    'columnNames': [],
   });
 
   void carregar(int index) {
@@ -19,7 +17,6 @@ class DataService {
     tableStateNotifier.value = {
       'status': TableStatus.loading,
       'dataObjects': [],
-      'columnNames': [],
     };
 
     funcoes[index]();
@@ -121,8 +118,8 @@ class DataService {
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': creditCardsJson,
-        'columnNames': ['Número', 'Nome', 'Bandeira', 'Data de Validade'],
-        'propertyNames': ['number', 'name', 'brand', 'expirationDate']
+        'columnNames': ['Número do cartão de crédito', 'Data de vencimento', 'Tipo do cartão'],
+        'propertyNames': ['credit_card_number', 'credit_card_expiry_date', 'credit_card_type']
       };
 
     } catch (error) {
@@ -251,17 +248,47 @@ class NewNavBar extends HookWidget {
     }
 }
 
+class DataTableWidget extends StatefulWidget {
+  final List<dynamic> jsonObjects;
+  final List<String> columnNames;
+  final List<String> propertyNames;
+  final int initialSortColumnIndex;
 
-class DataTableWidget extends StatelessWidget {
-    final List<dynamic> jsonObjects;
-    final List<String> columnNames;
-    final List<String> propertyNames;
+  const DataTableWidget({
+    required this.jsonObjects,
+    required this.columnNames,
+    required this.propertyNames,
+    this.initialSortColumnIndex = 0,
+  });
 
-    const DataTableWidget({
-      required this.jsonObjects,
-      required this.columnNames,
-      required this.propertyNames,
-    });
+  @override
+
+  _DataTableWidgetState createState() => _DataTableWidgetState();
+}
+
+class _DataTableWidgetState extends State<DataTableWidget> {
+    late List<dynamic> sortedJsonObjects;
+    late List<bool> sortAscending;
+    late int currentSortColumnIndex;
+
+    @override
+
+    void initState() {
+      super.initState();
+      sortedJsonObjects = widget.jsonObjects;
+      sortAscending = List<bool>.filled(widget.columnNames.length, true);
+      currentSortColumnIndex = widget.initialSortColumnIndex;
+      sortData(currentSortColumnIndex);
+    }
+
+    void sortData(int columnIndex) {
+      setState(() {
+        currentSortColumnIndex = columnIndex;
+        final int sign = sortAscending[columnIndex] ? 1 : -1;
+        sortedJsonObjects.sort((a, b) => sign * a[widget.propertyNames[columnIndex]].toString().compareTo(b[widget.propertyNames[columnIndex]].toString()));
+        sortAscending[columnIndex] = !sortAscending[columnIndex];
+      });
+    }
 
     @override
 
@@ -270,23 +297,26 @@ class DataTableWidget extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: DataTable(
           columns: List<DataColumn>.generate(
-            columnNames.length,
+            widget.columnNames.length,
             (index) => DataColumn(
-              label: Text(columnNames[index]),
-            ),
-          ),
-          rows: List<DataRow>.generate(
-            jsonObjects.length,
-            (index) => DataRow(
-              cells: List<DataCell>.generate(
-                columnNames.length,
-                (cellIndex) => DataCell(
-                  Text(jsonObjects[index][propertyNames[cellIndex]].toString()),
-                ),
+              label: GestureDetector(
+                child: Text(widget.columnNames[index]),
+                onTap: () => sortData(index),
               ),
             ),
           ),
+          rows: List<DataRow>.generate(
+            sortedJsonObjects.length,
+            (index) => DataRow(
+              cells: List<DataCell>.generate(
+                widget.columnNames.length,
+                (cellIndex) => DataCell(
+                  Text(sortedJsonObjects[index][widget.propertyNames[cellIndex]].toString()),
+                ),
+              ),
+          ),
         ),
-      );
-    }
+      ),
+    );
+  }
 }
