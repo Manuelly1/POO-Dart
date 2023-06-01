@@ -5,6 +5,7 @@ import 'dart:convert';
 
 enum TableStatus{idle,loading,ready,error}
 enum ItemType{beer, coffee, nation, none}
+
 class DataService{
   final ValueNotifier<Map<String,dynamic>> tableStateNotifier = ValueNotifier({
         'status':TableStatus.idle,
