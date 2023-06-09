@@ -5,7 +5,6 @@ import 'dart:convert';
 
 enum TableStatus{idle,loading,ready,error}
 enum ItemType{beer, coffee, nation, none}
-
 class DataService{
   static const MAX_N_ITEMS = 15;
   static const MIN_N_ITEMS = 3;

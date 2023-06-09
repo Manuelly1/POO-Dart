@@ -119,8 +119,7 @@ class DataTableWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            )
-            .toList(),
+            ).toList(),
         rows: jsonObjects
             .map(
               (obj) => DataRow(
@@ -130,8 +129,7 @@ class DataTableWidget extends StatelessWidget {
                     )
                     .toList(),
               ),
-            )
-            .toList(),
+            ).toList(),
       ),
     );
   }
