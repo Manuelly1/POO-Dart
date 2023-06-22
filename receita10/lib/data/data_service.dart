@@ -43,41 +43,19 @@ class DataService{
   }
 
 void ordenarEstadoAtual(String propriedade) {
-  List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
-  if (objetos.isEmpty) return;
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
-  Ordenador ord = Ordenador();
-  var objetosOrdenados = [];
-  final type = tableStateNotifier.value['itemType'];
+    if (objetos == []) return;
 
-  if (type == ItemType.beer && propriedade == "name") {
-    objetosOrdenados = ord.ordenarCervejasPorNomeCrescente(objetos);
-  } else if (type == ItemType.beer && propriedade == "style") {
-    objetosOrdenados = ord.ordenarCervejasPorEstiloCrescente(objetos);
-  } else if (type == ItemType.beer && propriedade == "ibu") {
-    objetosOrdenados = ord.ordenarCervejasPorIBUCrescente(objetos);
+    Ordenador ord = Ordenador();
 
-  } else if (type == ItemType.coffee && propriedade == "blend_name") {
-    objetosOrdenados = ord.ordenarCafesPorNomeCrescente(objetos);
-  } else if (type == ItemType.coffee && propriedade == "origin") {
-    objetosOrdenados = ord.ordenarCafesPorOrigemCrescente(objetos);
-  } else if (type == ItemType.coffee && propriedade == "variety") {
-    objetosOrdenados = ord.ordenarCafesPorTipoCrescente(objetos);
+    var objetosOrdenados = [];
+
+    objetosOrdenados = ord.ordenar(objetos, propriedade);
+  
+    emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
-
-  else if (type == ItemType.nation && propriedade == "nationality") {
-    objetosOrdenados = ord.ordenarNacoesPorNomeCrescente(objetos);
-  } else if (type == ItemType.nation && propriedade == "capital") {
-    objetosOrdenados = ord.ordenarNacoesPorCapitalCrescente(objetos);
-  } else if (type == ItemType.nation && propriedade == "language") {
-    objetosOrdenados = ord.ordenarNacoesPorIdiomaCrescente(objetos);
-  } else if (type == ItemType.nation && propriedade == "national_sport") {
-    objetosOrdenados = ord.ordenarNacoesPorEsporteCrescente(objetos);
-  }
-
-  emitirEstadoOrdenado(objetosOrdenados, propriedade);
-}
 
 
   Uri montarUri(ItemType type){
