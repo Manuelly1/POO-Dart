@@ -8,9 +8,7 @@ enum TableStatus{idle,loading,ready,error}
 
 enum ItemType{
   beer, coffee, nation, none;
-
   String get asString => '$name';
-
   List<String> get columns => this == coffee? ["Nome", "Origem", "Tipo"] :
                               this == beer? ["Nome", "Estilo", "IBU"]:
                               this == nation? ["Nome", "Capital", "Idioma","Esporte"]:
@@ -58,6 +56,7 @@ void ordenarEstadoAtual(String propriedade) {
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
+
   Uri montarUri(ItemType type){
     return Uri(
       scheme: 'https',
@@ -70,13 +69,11 @@ void ordenarEstadoAtual(String propriedade) {
     var jsonString = await http.read(uri);
     var json = jsonDecode(jsonString);
     json = [...tableStateNotifier.value['dataObjects'], ...json];
-    
     return json;
   }
 
   void emitirEstadoOrdenado(List objetosOrdenados, String propriedade){
     var estado = Map<String, dynamic>.from(tableStateNotifier.value);
-    
     estado['dataObjects'] = objetosOrdenados;
     estado['sortCriteria'] = propriedade;
     estado['ascending'] = true;
@@ -103,37 +100,20 @@ void ordenarEstadoAtual(String propriedade) {
   }
 
   bool temRequisicaoEmCurso() => tableStateNotifier.value['status'] == TableStatus.loading;
-  
   bool mudouTipoDeItemRequisitado(ItemType type) => tableStateNotifier.value['itemType'] != type;
 
   void carregarPorTipo(ItemType type) async{
     //ignorar solicitação se uma requisição já estiver em curso
-    if (temRequisicaoEmCurso()) {
-        return;
-    } 
+    if (temRequisicaoEmCurso()) return;
+
     if (mudouTipoDeItemRequisitado(type)){
       emitirEstadoCarregando(type);
     }
 
     var uri = montarUri(type);
-    var json = await acessarApi(uri);
+    var json = await acessarApi(uri);//, type);
 
     emitirEstadoPronto(type, json);
-  }
-}
-
-class DecididorJson extends Decididor{
-  final String propriedade;
-  DecididorJson(this.propriedade);
-
-  @override
-  bool precisaTrocarAtualPeloProximo(atual, proximo) {
-    try {
-      return atual[propriedade].compareTo(proximo[propriedade]) > 0;
-    } 
-    catch (error){
-      return false;
-    }    
   }
 }
 

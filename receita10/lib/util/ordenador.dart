@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+abstract class Decididor {
+  bool precisaTrocarAtualPeloProximo(dynamic atual, dynamic proximo);
+}
 
 class Ordenador {
-
   List ordenar(List objetos, String propriedade) {
     List objetosOrdenados = List.of(objetos);
     bool trocouAoMenosUm;
