@@ -120,3 +120,5 @@ void ordenarEstadoAtual(String propriedade) {
     emitirEstadoPronto(type, json);
   }
 }
+
+final dataService = DataService();

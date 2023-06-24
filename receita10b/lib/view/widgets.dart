@@ -6,31 +6,47 @@ class Options {
   static const List<int> options = [3, 5, 7];
 }
 
+class MyCustomScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+    BuildContext context,
+    Widget child,
+    AxisDirection axisDirection,
+  ) {
+    return GlowingOverscrollIndicator(
+      child: child,
+      axisDirection: axisDirection,
+      color: Colors.deepPurple, 
+      showLeading: false, 
+      showTrailing: false, 
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
-  final loadOptions = Options.options;
-  
+  final List<int> loadOptions = Options.options;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scrollBehavior: MyCustomScrollBehavior(),
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text("Dicas"),
-          actions:[
+          actions: [
             PopupMenuButton(
               itemBuilder: (_) => loadOptions.map(
                 (num) => PopupMenuItem(
                   value: num,
                   child: Text("Carregar $num itens por vez"),
-                ) 
+                ),
               ).toList(),
-              onSelected: (number){
+              onSelected: (number) {
                 dataService.numberOfItems = number;
               },
-            )
-          ] 
+            ),
+          ],
         ),
         body: ValueListenableBuilder(
           valueListenable: dataService.tableStateNotifier,
@@ -38,27 +54,24 @@ class MyApp extends StatelessWidget {
             switch (value['status']) {
               case TableStatus.idle:
                 return Center(child: Text("Toque em algum botão"));
-
               case TableStatus.loading:
                 return Center(child: CircularProgressIndicator());
-
               case TableStatus.ready:
                 return SingleChildScrollView(
                   child: DataTableWidget(
                     jsonObjects: value['dataObjects'],
                     propertyNames: value['propertyNames'],
-                    columnNames: value['columnNames']));
-
+                    columnNames: value['columnNames'],
+                  ),
+                );
               case TableStatus.error:
                 return Text("Lascou");
             }
-
             return Text("...");
-          }
+          },
         ),
-        bottomNavigationBar:
-          NewNavBar(itemSelectedCallback: dataService.carregar),
-      )
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+      ),
     );
   }
 }
