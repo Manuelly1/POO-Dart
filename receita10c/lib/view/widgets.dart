@@ -109,12 +109,10 @@ class DataTableWidget extends StatelessWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget(
-      {this.jsonObjects = const [],
-      this.columnNames = const [],
-      this.propertyNames = const []});
+  DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
 
   @override
+
   Widget build(BuildContext context) {
     return DataTable(
       columns: columnNames
@@ -123,8 +121,12 @@ class DataTableWidget extends StatelessWidget {
             dataService.ordenarEstadoAtual(propertyNames[columnIndex]),
           label: Expanded(
             child: Text(name,
-              style: TextStyle(fontStyle: FontStyle.italic)))))
+              style: TextStyle(fontStyle: FontStyle.italic))
+              )
+            )
+          )
         .toList(),
+
       rows: jsonObjects
         .map((obj) => DataRow(
           cells: propertyNames
