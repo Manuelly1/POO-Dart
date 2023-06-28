@@ -49,17 +49,18 @@ class DataService {
   }
 
   void ordenarEstadoAtual(String propriedade) {
-
     List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
-    if (objetos == []) return;
+    if (objetos.isEmpty) return;
 
     Ordenador ord = Ordenador();
 
     var objetosOrdenados = [];
 
-    objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
-  
+    bool crescente = true; // Defina o valor adequado para "crescente"
+
+    objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade, crescente).precisaTrocarAtualPeloProximo, crescente);
+
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
@@ -114,7 +115,6 @@ class DataService {
 
   void carregarPorTipo(ItemType type) async {
     //ignorar solicitação se uma requisição já estiver em curso
-
     if (temRequisicaoEmCurso()) {
         return;
     }
@@ -133,23 +133,20 @@ class DataService {
 
 final dataService = DataService();
 
-class DecididorJson extends Decididor{
+class DecididorJson implements Decididor {
   final String prop;
   final bool crescente;
-  DecididorJson( this.prop, [this.crescente = true]);
+
+  DecididorJson(this.prop, [this.crescente = true]);
 
   @override
-
-  bool precisaTrocarAtualPeloProximo(atual, proximo) {
-
-    try{
-      final ordemCorreta = crescente ? [atual, proximo]: [proximo, atual] ;
+  bool precisaTrocarAtualPeloProximo(dynamic atual, dynamic proximo, bool crescente) {
+    try {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
       return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
-      
-    } catch (error){
-
+    } catch (error) {
       return false;
-
-    }    
+    }
   }
 }
+
