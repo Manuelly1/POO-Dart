@@ -86,7 +86,7 @@ class NewNavBar extends HookWidget {
         : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
 
     @override
-    
+
     Widget build(BuildContext context) {
       var state = useState(1);
       return BottomNavigationBar(
@@ -97,13 +97,14 @@ class NewNavBar extends HookWidget {
           currentIndex: state.value,
           items: const [
             BottomNavigationBarItem(
-              label: "Cafés",
-              icon: Icon(Icons.coffee_outlined),
+                label: "Usuários", icon: Icon(Icons.person_2_outlined)
             ),
             BottomNavigationBarItem(
-                label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
+                label: "Bancos", icon: Icon(Icons.account_balance_outlined)
+            ),
             BottomNavigationBarItem(
-                label: "Nações", icon: Icon(Icons.flag_outlined))
+                label: "Tipos Sanguíneos", icon: Icon(Icons.bloodtype)
+            )
           ]);
     }
 }
