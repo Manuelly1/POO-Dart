@@ -7,18 +7,18 @@ import '../util/ordenador.dart';
 var valores = [3, 7, 15];
 
 enum TableStatus { idle, loading, ready, error }
-enum ItemType {users, banks, blood_types, none;
+enum ItemType {food, bank, restaurant, none;
 
   String get asString => '$name';
 
-  List<String> get columns => this == users ? ["Primeiro nome", "Usuário", "E-mail"] : 
-    this == banks ? ["Nome", "Número da conta", "Número de roteamento"] : 
-    this == blood_types ? ["ID", "Tipo", "Grupo"] :
+  List<String> get columns => this == food ? ["Prato", "Ingrediente", "Medição"] : 
+    this == bank ? ["Nome", "Número da conta", "Número de roteamento"] : 
+    this == restaurant ? ["Nome", "Tipo", "Número de telefone"] :
     [];
 
-  List<String> get properties => this == users ? ["first_name", "username", "email"] :
-    this == banks ? ["bank_name", "account_number", "routing_number"] : 
-    this == blood_types ? ["id", "type", "group"] : 
+  List<String> get properties => this == food ? ["dish", "ingredient", "measurement"] :
+    this == bank ? ["bank_name", "account_number", "routing_number"] : 
+    this == restaurant ? ["name", "type", "phone_number"] : 
     [];
 }
 
@@ -42,7 +42,7 @@ class DataService {
     });
 
     void carregar(index) {
-      final params = [ItemType.users, ItemType.banks, ItemType.blood_types];
+      final params = [ItemType.food, ItemType.bank, ItemType.restaurant];
 
       carregarPorTipo(params[index]);
     }
