@@ -4,8 +4,6 @@ import 'dart:convert';
 import '../util/decididor.dart';
 import '../util/ordenador.dart';
 
-var valores = [3, 7, 15];
-
 enum TableStatus { idle, loading, ready, error }
 enum ItemType {food, bank, restaurant, none;
 
@@ -24,21 +22,19 @@ enum ItemType {food, bank, restaurant, none;
 
 class DataService {
     
-    static int get MAX_N_ITEMS => valores[2];
-    static int get MIN_N_ITEMS => valores[0];
-    static int get DEFAULT_N_ITEMS => valores[1];
-
+    static const MAX_N_ITEMS = 15;
+    static const MIN_N_ITEMS = 3;
+    static const DEFAULT_N_ITEMS = 7;
     int _numberOfItems = DEFAULT_N_ITEMS;
 
-    set numberOfItems(n) {
-      _numberOfItems = n < 0 ? MIN_N_ITEMS : 
-      n > MAX_N_ITEMS ? MAX_N_ITEMS : n;
-    }
+    set numberOfItems(n){_numberOfItems = n < 0 ? MIN_N_ITEMS: n > MAX_N_ITEMS? MAX_N_ITEMS: n;}
 
     final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
       'status': TableStatus.idle,
       'dataObjects': [],
-      'itemType': ItemType.none
+      'itemType': ItemType.none,
+      'lastSortedProp': null,
+      'isAscending': true,
     });
 
     void carregar(index) {
@@ -56,9 +52,12 @@ class DataService {
 
       var objetosOrdenados = [];
 
-      bool crescente = true; // Defina o valor adequado para "crescente"
+      bool crescente = propriedade == tableStateNotifier.value['lastSortedProp'] ? !tableStateNotifier.value['isAscending'] : true;
 
-      objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade, crescente).precisaTrocarAtualPeloProximo, crescente);
+      objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
+
+      tableStateNotifier.value['lastSortedProp'] = propriedade;
+      tableStateNotifier.value['isAscending'] = crescente;
 
       emitirEstadoOrdenado(objetosOrdenados, propriedade);
     }
@@ -131,19 +130,18 @@ class DataService {
 final dataService = DataService();
 
 class DecididorJson implements Decididor {
-    final String prop;
-    final bool crescente;
+  final String prop;
+  final bool crescente;
 
-    DecididorJson(this.prop, [this.crescente = true]);
+  DecididorJson(this.prop, [this.crescente = true]);
 
-    @override
-
-    bool precisaTrocarAtualPeloProximo(dynamic atual, dynamic proximo, bool crescente) {
-      try {
-        final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-        return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
-      } catch (error) {
-        return false;
-      }
+  @override
+  bool precisaTrocar(dynamic atual, dynamic proximo, bool crescente) {
+    try {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
+    } catch (error) {
+      return false;
     }
+  }
 }
