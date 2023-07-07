@@ -4,6 +4,8 @@ import 'dart:convert';
 import '../util/decididor.dart';
 import '../util/ordenador.dart';
 
+var valores = [3, 7, 15]; 
+
 enum TableStatus { idle, loading, ready, error }
 enum ItemType {food, bank, restaurant, none;
 
@@ -33,8 +35,6 @@ class DataService {
       'status': TableStatus.idle,
       'dataObjects': [],
       'itemType': ItemType.none,
-      'lastSortedProp': null,
-      'isAscending': true,
     });
 
     void carregar(index) {
@@ -43,7 +43,7 @@ class DataService {
       carregarPorTipo(params[index]);
     }
 
-    void ordenarEstadoAtual(String propriedade) {
+    void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
       List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
       if (objetos.isEmpty) return;
@@ -51,13 +51,15 @@ class DataService {
       Ordenador ord = Ordenador();
 
       var objetosOrdenados = [];
+      bool crescente = cresc;
 
-      bool crescente = propriedade == tableStateNotifier.value['lastSortedProp'] ? !tableStateNotifier.value['isAscending'] : true;
+      bool precisaTrocar(atual, proximo) {
+        final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+        return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
+      }
 
-      objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
-
-      tableStateNotifier.value['lastSortedProp'] = propriedade;
-      tableStateNotifier.value['isAscending'] = crescente;
+      // objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
+      objetosOrdenados = ord.segundoOrdenar(objetos, precisaTrocar);
 
       emitirEstadoOrdenado(objetosOrdenados, propriedade);
     }
