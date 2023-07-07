@@ -70,6 +70,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class NewNavBar extends HookWidget {
     final _itemSelectedCallback;
 
@@ -99,6 +100,7 @@ class NewNavBar extends HookWidget {
           ]);
     }
 }
+
 class DataTableWidget extends HookWidget {
   final List jsonObjects;
   final List<String> columnNames;
@@ -137,6 +139,7 @@ class DataTableWidget extends HookWidget {
           .toList()));
   }
 }
+
 class MyAppBar extends HookWidget {
   const MyAppBar({Key? key}) : super(key: key);
 

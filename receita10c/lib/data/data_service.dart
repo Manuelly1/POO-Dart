@@ -138,6 +138,7 @@ class DecididorJson implements Decididor {
   DecididorJson(this.prop, [this.crescente = true]);
 
   @override
+  
   bool precisaTrocar(dynamic atual, dynamic proximo, bool crescente) {
     try {
       final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
