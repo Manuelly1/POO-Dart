@@ -109,7 +109,7 @@ class DataTableWidget extends HookWidget {
   DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
 
   @override
-  
+
   Widget build(BuildContext context) {
     final sortAscending = useState(true);
     final sortColumnIndex = useState(0);
@@ -131,6 +131,7 @@ class DataTableWidget extends HookWidget {
               child: Text(name,
                 style: TextStyle(fontStyle: FontStyle.italic)))))
           .toList(),
+          
         rows: jsonObjects
           .map((obj) => DataRow(
             cells: propertyNames
@@ -148,20 +149,41 @@ class MyAppBar extends HookWidget {
   Widget build(BuildContext context) {
     var state = useState(7);
 
-    return AppBar(title: const Text("Dicas"), actions: [
-      PopupMenuButton(
-        initialValue: state.value,
-        itemBuilder: (_) => valores
+    return AppBar(
+      title: Text("Dicas"),
+      actions: [
+        SearchBar(
+          leading: Icon(
+            Icons.search,
+            color: Colors.grey,
+          ),
+          constraints: BoxConstraints(
+            minWidth: 1.0,
+            maxWidth: 280.0,
+          ),
+          onChanged: (filter) {
+            if (filter.length >= 3) {
+              dataService.filtrarEstadoAtual(filter);
+            }
+            else {
+              dataService.filtrarEstadoAtual('');
+            }
+          },
+        ),
+        PopupMenuButton(
+          initialValue: state.value,
+          itemBuilder: (_) => valores
             .map((num) => PopupMenuItem(
-                  value: num,
-                  child: Text("Carregar $num itens por vez"),
-                ))
+                value: num,
+                child: Text("Carregar $num itens por vez"),
+              ))
             .toList(),
-        onSelected: (number) {
-          state.value = number;
-          dataService.numberOfItems = number;
-        },
-      )
-    ]);
+          onSelected: (number) {
+            state.value = number;
+            dataService.numberOfItems = number;
+          },
+        )
+      ]
+    );
   }
 }

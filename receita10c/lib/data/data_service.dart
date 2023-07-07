@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../util/decididor.dart';
 import '../util/ordenador.dart';
+import '../util/filtro.dart';
 
 var valores = [3, 7, 15]; 
 
@@ -23,114 +24,146 @@ enum ItemType {food, bank, restaurant, none;
 }
 
 class DataService {
+  static int get MAX_N_ITEMS => valores[2];
+  static int get MIN_N_ITEMS => valores[0];
+  static int get DEFAULT_N_ITEMS => valores[1];
+
+  int _numberOfItems = DEFAULT_N_ITEMS;
+
+  set numberOfItems(n){
+    _numberOfItems = n < 0 ? MIN_N_ITEMS: n > MAX_N_ITEMS? MAX_N_ITEMS: n;
+  }
+
+  final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
+    'status': TableStatus.idle,
+    'dataObjects': [],
+    'itemType': ItemType.none,
+  });
+
+  void carregar(index){
+    final params = [ItemType.food, ItemType.restaurant, ItemType.food];
+
+    carregarPorTipo(params[index]);  
+  }
+
+  void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+
+    if (objetos.isEmpty) return;
+
+    Ordenador ord = Ordenador();
+
+    var objetosOrdenados = [];
+    bool crescente = cresc;
+
+    bool precisaTrocar(atual, proximo) {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
+    }
+
+    // objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
+    objetosOrdenados = ord.segundoOrdenar(objetos, precisaTrocar);
+
+    emitirEstadoOrdenado(objetosOrdenados, propriedade);
+  }
+
+  void filtrarEstadoAtual(final String filtro) {
+    List objetos = tableStateNotifier.value['previousObjects'] ?? [];
     
-    static const MAX_N_ITEMS = 15;
-    static const MIN_N_ITEMS = 3;
-    static const DEFAULT_N_ITEMS = 7;
-    int _numberOfItems = DEFAULT_N_ITEMS;
+    if (objetos == []) return;
 
-    set numberOfItems(n){_numberOfItems = n < 0 ? MIN_N_ITEMS: n > MAX_N_ITEMS? MAX_N_ITEMS: n;}
+    List propriedades = tableStateNotifier.value['propertyNames'];
 
-    final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
-      'status': TableStatus.idle,
-      'dataObjects': [],
-      'itemType': ItemType.none,
-    });
+    Filtrador fil = Filtrador();
 
-    void carregar(index) {
-      final params = [ItemType.food, ItemType.bank, ItemType.restaurant];
+    DecididorFiltro d = DecididorFiltroJSON(propriedades);
 
-      carregarPorTipo(params[index]);
-    }
+    var objetosFiltrados = fil.filtrar(objetos, filtro, d.dentroDoFiltro);
 
-    void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
-      List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+    emitirEstadoFiltrado(objetos, objetosFiltrados, filtro);
+  }
 
-      if (objetos.isEmpty) return;
 
-      Ordenador ord = Ordenador();
-
-      var objetosOrdenados = [];
-      bool crescente = cresc;
-
-      bool precisaTrocar(atual, proximo) {
-        final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-        return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
-      }
-
-      // objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
-      objetosOrdenados = ord.segundoOrdenar(objetos, precisaTrocar);
-
-      emitirEstadoOrdenado(objetosOrdenados, propriedade);
-    }
-
-    Uri montarUri(ItemType type) {
+  Uri montarUri(ItemType type) {
       return Uri(
           scheme: 'https',
           host: 'random-data-api.com',
           path: 'api/${type.asString}/random_${type.asString}',
           queryParameters: {'size': '$_numberOfItems'});
+  }
+  
+  Future<List<dynamic>> acessarApi(Uri uri) async {
+    var jsonString = await http.read(uri);
+    var json = jsonDecode(jsonString);
+
+    json = [...tableStateNotifier.value['dataObjects'], ...json];
+
+    return json;
+  }
+
+  void emitirEstadoFiltrado(List objetosOriginais, List objetosFiltrados, String filtro) {
+    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
+    estado['previousObjects'] = objetosOriginais;
+    estado['dataObjects'] = objetosFiltrados;
+    estado['filterCriteria'] = filtro;
+    tableStateNotifier.value = estado;
+  }
+
+  void emitirEstadoOrdenado(List objetosOrdenados, String propriedade){
+    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
+
+    estado['dataObjects'] = objetosOrdenados;
+    estado['sortCriteria'] = propriedade;
+    estado['ascending'] = true;
+    tableStateNotifier.value = estado;
+  }
+
+  void emitirEstadoCarregando(ItemType type) {
+    tableStateNotifier.value = {
+      'status': TableStatus.loading,
+      'dataObjects': [],
+      'itemType': type,
+      'previousObjects': []
+    };
+  }
+
+  void emitirEstadoPronto(ItemType type, var json) {
+    tableStateNotifier.value = {
+      'itemType': type,
+      'status': TableStatus.ready,
+      'dataObjects': json,
+      'propertyNames': type.properties,
+      'columnNames': type.columns,
+      'previousObjects': json
+    };
+  }
+
+  bool temRequisicaoEmCurso() =>
+    tableStateNotifier.value['status'] == TableStatus.loading;
+
+  bool mudouTipoDeItemRequisitado(ItemType type) =>
+    tableStateNotifier.value['itemType'] != type;
+
+  void carregarPorTipo(ItemType type) async {
+    //ignorar solicitação se uma requisição já estiver em curso
+    if (temRequisicaoEmCurso())
+    {
+      return;
+    } 
+    if (mudouTipoDeItemRequisitado(type)) {
+      emitirEstadoCarregando(type);
     }
 
-    Future<List<dynamic>> acessarApi(Uri uri) async {
-      var jsonString = await http.read(uri);
-      var json = jsonDecode(jsonString);
+    var uri = montarUri(type);
+    var json = await acessarApi(uri);
 
-      json = [...tableStateNotifier.value['dataObjects'], ...json];
-
-      return json;
-    }
-
-    void emitirEstadoOrdenado(List objetosOrdenados, String propriedade) {
-      var estado = Map<String, dynamic>.from(tableStateNotifier.value);
-
-      estado['dataObjects'] = objetosOrdenados;
-      estado['sortCriteria'] = propriedade;
-      estado['ascending'] = true;
-
-      tableStateNotifier.value = estado;
-    }
-
-    void emitirEstadoCarregando(ItemType type) {
-      tableStateNotifier.value = {
-        'status': TableStatus.loading,
-        'dataObjects': [],
-        'itemType': type
-      };
-    }
-
-    void emitirEstadoPronto(ItemType type, var json) {
-      tableStateNotifier.value = {
-        'itemType': type,
-        'status': TableStatus.ready,
-        'dataObjects': json,
-        'propertyNames': type.properties,
-        'columnNames': type.columns
-      };
-    }
-
-    bool temRequisicaoEmCurso() => tableStateNotifier.value['status'] == TableStatus.loading;
-
-    bool mudouTipoDeItemRequisitado(ItemType type) => tableStateNotifier.value['itemType'] != type;
-
-    void carregarPorTipo(ItemType type) async {
-      //ignorar solicitação se uma requisição já estiver em curso
-      if (temRequisicaoEmCurso()) {
-          return;
-      }
-      if (mudouTipoDeItemRequisitado(type)) {
-        emitirEstadoCarregando(type);
-      }
-
-      var uri = montarUri(type);
-      var json = await acessarApi(uri); //, type);
-
-      emitirEstadoPronto(type, json);
-    }
+    emitirEstadoPronto(type, json);
+  }
 }
 
 final dataService = DataService();
 
+// decididor de ordenação
 class DecididorJson implements Decididor {
   final String prop;
   final bool crescente;
@@ -146,5 +179,22 @@ class DecididorJson implements Decididor {
     } catch (error) {
       return false;
     }
+  }
+}
+
+class DecididorFiltroJSON extends DecididorFiltro {
+  final List propriedades;
+
+  DecididorFiltroJSON(this.propriedades);
+
+  @override
+
+  bool dentroDoFiltro(objeto, filtro) {
+    bool achouAoMenosUm = false;
+    for (int i=0; i<propriedades.length-1; i++) {
+      achouAoMenosUm = objeto[propriedades[i]].contains(filtro) ? true : false;
+      if (achouAoMenosUm) break;
+    }
+    return achouAoMenosUm;
   }
 }
