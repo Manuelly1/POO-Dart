@@ -121,11 +121,10 @@ class DataTableWidget extends HookWidget {
   Widget build(BuildContext context) {
     final sortAscending = useState(true);
     final sortColumnIndex = useState(1);
-
     return DataTable(
       sortAscending: sortAscending.value,
       sortColumnIndex: sortColumnIndex.value,
-      
+
       columns: columnNames.map( 
         (name) => DataColumn(
           onSort: (columnIndex, ascending) {
@@ -150,6 +149,7 @@ class DataTableWidget extends HookWidget {
   }
 }
 
+
 class MyAppBar extends HookWidget {
   final _callback;
 
@@ -160,7 +160,6 @@ class MyAppBar extends HookWidget {
   Widget build(BuildContext context) {
     var state = useState(7);
 
-    
     return AppBar(
       title: Text("Dicas"),
       actions: [
@@ -173,8 +172,7 @@ class MyAppBar extends HookWidget {
             minWidth: 1.0,
             maxWidth: 280.0,
           ),         
-          onChanged: (value) { _callback(value);
-          },
+          onChanged: (value) { _callback(value);},
         ),
         PopupMenuButton(
           initialValue: state.value,
