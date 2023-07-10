@@ -160,31 +160,37 @@ class MyAppBar extends HookWidget {
   Widget build(BuildContext context) {
     var state = useState(7);
 
-    return AppBar( 
-          actions:[
-            Flexible(
-              child: TextField(
-                onChanged: (value) {
-                  _callback(value);
-                },
-                decoration: const InputDecoration(
-                  hintText: 'O que deseja buscar: ',        
-                ),
-              ),
-            ),     
-            PopupMenuButton(
-              initialValue: state.value,
-              itemBuilder: (_) => valores.map((num) => PopupMenuItem(
-                  value: num,
-                  child: Text("Carregar $num itens por vez"),
-                ) 
-              ).toList(),
-              onSelected: (number){
-                state.value = number;
-                dataService.numberOfItems = number;
-              },
-            )
-          ]          
-    );  
+    
+    return AppBar(
+      title: Text("Dicas"),
+      actions: [
+        SearchBar(
+          leading: Icon(
+            Icons.search,
+            color: Colors.grey,
+          ),
+          constraints: BoxConstraints(
+            minWidth: 1.0,
+            maxWidth: 280.0,
+          ),         
+          onChanged: (value) { _callback(value);
+          },
+        ),
+        PopupMenuButton(
+          initialValue: state.value,
+          itemBuilder: (_) => valores
+            .map((num) => PopupMenuItem(
+                value: num,
+                child: Text("Carregar $num itens por vez"),
+              ))
+            .toList(),
+          onSelected: (number) {
+            state.value = number;
+            dataService.numberOfItems = number;
+          },
+        )
+      ]
+    );
   }
 }
+
