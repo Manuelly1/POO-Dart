@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../util/decididor.dart';
-
+import '../util/ordenador.dart';
+import '../util/filtro.dart';
 
 var valores = [3, 7, 15]; 
 
@@ -29,9 +30,9 @@ class DataService {
 
   int _numberOfItems = DEFAULT_N_ITEMS;
 
-  var objetoOriginal = [];
-
-  set numberOfItems(n){ _numberOfItems = n < 0 ? MIN_N_ITEMS: n > MAX_N_ITEMS? MAX_N_ITEMS: n; }
+  set numberOfItems(n){
+    _numberOfItems = n < 0 ? MIN_N_ITEMS: n > MAX_N_ITEMS? MAX_N_ITEMS: n;
+  }
 
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
     'status': TableStatus.idle,
@@ -48,56 +49,40 @@ class DataService {
   void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
     List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
-    if (objetos == []) {
-      return;
-    }
+    if (objetos.isEmpty) return;
 
-    var objetosOrdenados = objetos;
+    Ordenador ord = Ordenador();
 
+    var objetosOrdenados = [];
     bool crescente = cresc;
 
-    bool precisaTrocarAtualPeloProximo(atual, proximo) {
+    bool precisaTrocar(atual, proximo) {
       final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-      
       return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
     }
 
-  objetosOrdenados.sort((a, b) {
-    if (precisaTrocarAtualPeloProximo(a, b)) {
-      return 1; 
-    } 
-    
-    else if (precisaTrocarAtualPeloProximo(b, a)) {
-      return -1; 
-    } 
-    
-    else {
-      return 0; 
-    }
-
-  });
+    // objetosOrdenados = ord.ordenar(objetos, DecididorJson(propriedade, crescente).precisaTrocar, crescente);
+    objetosOrdenados = ord.segundoOrdenar(objetos, precisaTrocar);
 
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
-  void filtrarEstadoAtual(String filtrar) {
-    List objetos = objetoOriginal;
+  void filtrarEstadoAtual(final String filtro) {
+    List objetos = tableStateNotifier.value['previousObjects'] ?? [];
+    
+    if (objetos == []) return;
 
-    if (objetos.isEmpty) return;
+    List propriedades = tableStateNotifier.value['propertyNames'];
 
-    List objetosFiltrados = objetoOriginal;
+    Filtrador fil = Filtrador();
 
-    if (filtrar != '') {
-      objetosFiltrados = objetos.where((objeto) =>
-      objeto.toString().toLowerCase().contains(filtrar.toLowerCase())).toList();
-    }
+    DecididorFiltro d = DecididorFiltroJSON(propriedades);
 
-    else {
-      objetosFiltrados = objetoOriginal;
-    }
+    var objetosFiltrados = fil.filtrar(objetos, filtro, d.dentroDoFiltro);
 
-    emitirEstadoFiltrado(objetosFiltrados);
+    emitirEstadoFiltrado(objetos, objetosFiltrados, filtro);
   }
+
 
   Uri montarUri(ItemType type) {
       return Uri(
@@ -116,15 +101,20 @@ class DataService {
     return json;
   }
 
-  void emitirEstadoOrdenado(List objetosOrdenados, String propriedade) {
+  void emitirEstadoFiltrado(List objetosOriginais, List objetosFiltrados, String filtro) {
+    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
+    estado['previousObjects'] = objetosOriginais;
+    estado['dataObjects'] = objetosFiltrados;
+    estado['filterCriteria'] = filtro;
+    tableStateNotifier.value = estado;
+  }
+
+  void emitirEstadoOrdenado(List objetosOrdenados, String propriedade){
     var estado = Map<String, dynamic>.from(tableStateNotifier.value);
 
     estado['dataObjects'] = objetosOrdenados;
-
     estado['sortCriteria'] = propriedade;
-
     estado['ascending'] = true;
-
     tableStateNotifier.value = estado;
   }
 
@@ -132,7 +122,8 @@ class DataService {
     tableStateNotifier.value = {
       'status': TableStatus.loading,
       'dataObjects': [],
-      'itemType': type
+      'itemType': type,
+      'previousObjects': []
     };
   }
 
@@ -142,38 +133,29 @@ class DataService {
       'status': TableStatus.ready,
       'dataObjects': json,
       'propertyNames': type.properties,
-      'columnNames': type.columns
+      'columnNames': type.columns,
+      'previousObjects': json
     };
-
-    objetoOriginal = json;
   }
 
-  void emitirEstadoFiltrado(List objetosFiltrados) {
-    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
+  bool temRequisicaoEmCurso() =>
+    tableStateNotifier.value['status'] == TableStatus.loading;
 
-    estado['dataObjects'] = objetosFiltrados;
-
-    tableStateNotifier.value = estado;
-  }
-
-  bool temRequisicaoEmCurso() => tableStateNotifier.value['status'] == TableStatus.loading;
-
-  bool mudouTipoDeItemRequisitado(ItemType type) => tableStateNotifier.value['itemType'] != type;
+  bool mudouTipoDeItemRequisitado(ItemType type) =>
+    tableStateNotifier.value['itemType'] != type;
 
   void carregarPorTipo(ItemType type) async {
     //ignorar solicitação se uma requisição já estiver em curso
-
-    if (temRequisicaoEmCurso()) {
+    if (temRequisicaoEmCurso())
+    {
       return;
-    }
-
+    } 
     if (mudouTipoDeItemRequisitado(type)) {
       emitirEstadoCarregando(type);
     }
 
     var uri = montarUri(type);
-
-    var json = await acessarApi(uri); //, type);
+    var json = await acessarApi(uri);
 
     emitirEstadoPronto(type, json);
   }
@@ -181,20 +163,38 @@ class DataService {
 
 final dataService = DataService();
 
-class DecididorJson extends Decididor {
+// decididor de ordenação
+class DecididorJson implements Decididor {
   final String prop;
   final bool crescente;
 
   DecididorJson(this.prop, [this.crescente = true]);
 
   @override
-
-  bool precisaTrocar(atual, proximo) {
+  
+  bool precisaTrocar(dynamic atual, dynamic proximo, bool crescente) {
     try {
       final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
       return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
     } catch (error) {
       return false;
     }
+  }
+}
+
+class DecididorFiltroJSON extends DecididorFiltro {
+  final List propriedades;
+
+  DecididorFiltroJSON(this.propriedades);
+
+  @override
+
+  bool dentroDoFiltro(objeto, filtro) {
+    bool achouAoMenosUm = false;
+    for (int i=0; i<propriedades.length-1; i++) {
+      achouAoMenosUm = objeto[propriedades[i]].contains(filtro) ? true : false;
+      if (achouAoMenosUm) break;
+    }
+    return achouAoMenosUm;
   }
 }

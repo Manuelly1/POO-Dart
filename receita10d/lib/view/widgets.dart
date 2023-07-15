@@ -25,60 +25,57 @@ class MyCustomScrollBehavior extends ScrollBehavior {
     }
 }
 
-class MyApp extends HookWidget {
-
+class MyApp extends StatelessWidget {
+  final loadOptions = Options.options;
+  
   @override
 
   Widget build(BuildContext context) {
     return MaterialApp(
+      scrollBehavior: MyCustomScrollBehavior(),
       theme: ThemeData(primarySwatch: Colors.deepPurple),
-      debugShowCheckedModeBanner:false,
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: MyAppBar(callback: dataService.filtrarEstadoAtual),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: MyAppBar(),
         ),
         body: ValueListenableBuilder(
           valueListenable: dataService.tableStateNotifier,
-          builder:(_, value, __){
-            switch (value['status']){
-              case TableStatus.idle: 
+          builder: (_, value, __) {
+            switch (value['status']) {
+              case TableStatus.idle:
                 return Center(child: Text("Toque em algum botão"));
+
               case TableStatus.loading:
                 return Center(child: CircularProgressIndicator());
-              case TableStatus.ready: 
-                return Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,                
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTableWidget(
-                      jsonObjects: value['dataObjects'], 
-                      propertyNames: value['propertyNames'], 
-                      columnNames: value['columnNames']
-                    )
-                  ),
-                ),
-              );
-              case TableStatus.error: 
+
+              case TableStatus.ready:
+                return SingleChildScrollView(
+                  child: DataTableWidget(
+                    jsonObjects: value['dataObjects'],
+                    propertyNames: value['propertyNames'],
+                    columnNames: value['columnNames']));
+
+              case TableStatus.error:
                 return Text("Lascou");
             }
+
             return Text("...");
           }
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar:
+          NewNavBar(itemSelectedCallback: dataService.carregar),
       )
     );
   }
 }
 
-
 class NewNavBar extends HookWidget {
     final _itemSelectedCallback;
 
-    NewNavBar({itemSelectedCallback}) : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
+    NewNavBar({itemSelectedCallback})
+        : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
 
     @override
 
@@ -92,22 +89,17 @@ class NewNavBar extends HookWidget {
           currentIndex: state.value,
           items: const [
             BottomNavigationBarItem(
-                label: "Comidas", 
-                icon: Icon(Icons.food_bank_outlined)
+                label: "Comidas", icon: Icon(Icons.food_bank_outlined)
             ),
             BottomNavigationBarItem(
-                label: "Restaurantes", 
-                icon: Icon(Icons.restaurant_menu_outlined)
+                label: "Restaurantes", icon: Icon(Icons.restaurant_menu_outlined)
             ),
             BottomNavigationBarItem(
-                label: "Bancos", 
-                icon: Icon(Icons.account_balance_outlined)
+                label: "Bancos", icon: Icon(Icons.account_balance_outlined)
             )
-          ]
-        );
+          ]);
     }
 }
-
 
 class DataTableWidget extends HookWidget {
   final List jsonObjects;
@@ -120,40 +112,37 @@ class DataTableWidget extends HookWidget {
 
   Widget build(BuildContext context) {
     final sortAscending = useState(true);
-    final sortColumnIndex = useState(1);
-    return DataTable(
-      sortAscending: sortAscending.value,
-      sortColumnIndex: sortColumnIndex.value,
+    final sortColumnIndex = useState(0);
 
-      columns: columnNames.map( 
-        (name) => DataColumn(
-          onSort: (columnIndex, ascending) {
-            sortColumnIndex.value = columnIndex;
-            sortAscending.value = !sortAscending.value;
-            dataService.ordenarEstadoAtual(propertyNames[columnIndex], sortAscending.value);
-          },
-          label: Expanded(
-            child: Text(name, style: TextStyle(fontStyle: FontStyle.italic))
-          )
-        )
-      ).toList(),
+    return Center(
+      child: DataTable(
+        sortAscending: sortAscending.value,
+        sortColumnIndex: sortColumnIndex.value,
+        
+        columns: columnNames
+          .map((name) => DataColumn(
+            onSort: (columnIndex, ascending) {
+              sortColumnIndex.value = columnIndex;
+              sortAscending.value = !sortAscending.value;
 
-      rows: jsonObjects.map( 
-        (obj) => DataRow(
-            cells: propertyNames.map(
-              (propName) => DataCell(Text(obj[propName]))
-            ).toList()
-          )
-        ).toList()
-      );
+              dataService.ordenarEstadoAtual(propertyNames[columnIndex], sortAscending.value);
+            },
+            label: Expanded(
+              child: Text(name,
+                style: TextStyle(fontStyle: FontStyle.italic)))))
+          .toList(),
+          
+        rows: jsonObjects
+          .map((obj) => DataRow(
+            cells: propertyNames
+              .map((propName) => DataCell(Text(obj[propName])))
+              .toList()))
+          .toList()));
   }
 }
 
-
 class MyAppBar extends HookWidget {
-  final _callback;
-
-  MyAppBar({callback}): _callback = callback ?? (int){}
+  const MyAppBar({Key? key}) : super(key: key);
 
   @override
 
@@ -171,8 +160,15 @@ class MyAppBar extends HookWidget {
           constraints: BoxConstraints(
             minWidth: 1.0,
             maxWidth: 280.0,
-          ),         
-          onChanged: (value) { _callback(value);},
+          ),
+          onChanged: (filter) {
+            if (filter.length >= 3) {
+              dataService.filtrarEstadoAtual(filter);
+            }
+            else {
+              dataService.filtrarEstadoAtual('');
+            }
+          },
         ),
         PopupMenuButton(
           initialValue: state.value,
@@ -191,4 +187,3 @@ class MyAppBar extends HookWidget {
     );
   }
 }
-
