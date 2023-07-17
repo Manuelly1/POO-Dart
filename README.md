@@ -1,14 +1,15 @@
-<h1 align="center"> Programação Orientada a Objetos I </h1>
+<h1 align="center"> Programação Orientada à Objetos I </h1>
 
 ## 🚀 Tecnologias
 
-Este repositório está sendo desenvolvido a partir da linguagem:
+Este repositório foi desenvolvido a partir da linguagem:
 
 - Dart
 
 ## 💻 Repositório
 
-Este é um repositório que está em desenvolvimento, visto que estou compartilhando aqui acerca dos meus estudos em POO.
+Este é um repositório que foi desenvolvido na disciplina de Programação Orientada à Objetos I, onde compartilhei as tarefas instruídas pelo professor.
+
 ## :memo: Licença
 
 Esse projeto está sob a licença MIT.
